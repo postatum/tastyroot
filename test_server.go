@@ -7,9 +7,9 @@ import (
 )
 
 type Cat struct {
-	name  string
-	age   int
-	alive bool
+	Name  string
+	Age   int
+	Alive bool
 }
 
 func main() {
