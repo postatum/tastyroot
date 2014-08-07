@@ -16,7 +16,7 @@ import (
 func Register(resource resources.ResourceInterface) {
 	url, err := resource.GetBaseUrl()
 	if err != nil {
-		panic("Falied to get resource url via GetBaseUrl")
+		panic("Failed to get resource url via GetBaseUrl")
 	}
 	http.Handle(url, resource)
 }
