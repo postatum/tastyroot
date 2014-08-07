@@ -13,9 +13,18 @@ type Cat struct {
 }
 
 func main() {
+	cats := []Cat{
+		{"Batman", 13, true},
+		{"Banana", 3, true},
+		{"Pong", 22, false},
+	}
 	cat := Cat{"Batman", 13, true}
-	resource := resources.SimpleObjResource{cat, "/cat"}
-	api.Register(&resource)
+
+	cat_resource := resources.GenericResource{cat, "/cat"}
+	cats_resource := resources.GenericResource{cats, "/cats"}
+
+	api.Register(&cat_resource)
+	api.Register(&cats_resource)
 
 	http.ListenAndServe(":8000", nil)
 }
