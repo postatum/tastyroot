@@ -13,14 +13,10 @@ import (
 // import "tastyroot/api"
 //
 // api.Register(&someResource)
-//
-func Register(res resources.ResourceInterface) {
-	http.HandleFunc(res.GetBaseUrl(), func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case "GET":
-			res.Dehydrate(w, r)
-		case "POST":
-			res.Hydrate(w, r)
-		}
-	})
+func Register(resource resources.ResourceInterface) {
+	url, err := resource.GetBaseUrl()
+	if err != nil {
+		panic("Falied to get resource url via GetBaseUrl")
+	}
+	http.Handle(url, resource)
 }
