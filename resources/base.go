@@ -14,11 +14,23 @@ type ResourceInterface interface {
 	GetBaseUrl() (string, error)
 }
 
+// EngineInterface defines an interface that should be implemented
+// for every database engine you want to use with EngineResource.
 type EngineInterface interface {
 	HandleGETData(r *http.Request) (interface{}, error)
 	HandlePOSTData(r *http.Request) error
 }
 
+// EngineResource implements ResourceInterface and is intended to use
+// with databases wrappers that are implemented using EngineInterface(Engine attr).
+// HTTP requests are passed to the :Engine: to generate data or do changes
+// in the database/something else.
+//
+// To create a resource for some DB engine Foo:
+//   1. Implement EngineInterface - FooEngine.
+//   2. Create an instance of EngineResource using your FooEngine and other
+// 		required arguments; and return it.
+// 	 Constructor function will simplify this process.
 type EngineResource struct {
 	BaseUrl string
 	Engine EngineInterface
@@ -27,7 +39,6 @@ type EngineResource struct {
 	TableName string
 }
 
-// ServeHTTP checks the method and calls certain method to handle the request.
 func (res *EngineResource) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
@@ -37,7 +48,6 @@ func (res *EngineResource) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// HandleGET handles GET requests.
 func (res *EngineResource) HandleGET(w http.ResponseWriter, r *http.Request) {
 	data, err := res.Engine.HandleGETData(r)
 
@@ -51,7 +61,6 @@ func (res *EngineResource) HandleGET(w http.ResponseWriter, r *http.Request) {
 	w.Write(json_string)
 }
 
-// HandlePOST handles only POST (for now) requests and does nothing useful (for now).
 func (res *EngineResource) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	json_data := make(map[string]interface{})
 
@@ -71,7 +80,6 @@ func (res *EngineResource) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	w.Write(json_string)
 }
 
-// GetBaseUrl returns resource's BaseUrl attribute.
 func (res *EngineResource) GetBaseUrl() (string, error) {
 	return res.BaseUrl, nil
 }
