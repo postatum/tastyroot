@@ -5,17 +5,7 @@ import (
 	"net/http"
 )
 
-// ResourceInterface defines an interface implementers of which
-// should handle GET, POST requests from user.
-type ResourceInterface interface {
-	ServeHTTP(w http.ResponseWriter, r *http.Request)
-	Dehydrate(w http.ResponseWriter, r *http.Request)
-	Hydrate(w http.ResponseWriter, r *http.Request)
-	GetData() (interface{}, error)
-	GetBaseUrl() (string, error)
-}
-
-// GenericResource implements ResourceInterface and allows to serve
+// SimpleResource implements ResourceInterface and allows to serve
 // JSON data of a given :Data:. Marshal fields visibility rules apply.
 //
 // Example:
@@ -32,28 +22,28 @@ type ResourceInterface interface {
 //
 // bane = Cat{"Bane", 13}
 //
-// cat_resource := resources.GenericResource{cat, "/cat"}
+// cat_resource := resources.SimpleResource{cat, "/cat"}
 //
 // api.Register(&cat_resource)
 
-type GenericResource struct {
+type SimpleResource struct {
 	Data    interface{}
 	BaseUrl string
 }
 
 // ServeHTTP checks the method and calls certain method to handle the request.
-func (res *GenericResource) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (res *SimpleResource) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		res.Dehydrate(w, r)
+		res.HandleGET(w, r)
 	case "POST":
-		res.Hydrate(w, r)
+		res.HandlePOST(w, r)
 	}
 }
 
-// Dehydrate handles GET requests.
+// HandleGET handles GET requests.
 // Method's name is not obvious but I like it :)
-func (res *GenericResource) Dehydrate(w http.ResponseWriter, r *http.Request) {
+func (res *SimpleResource) HandleGET(w http.ResponseWriter, r *http.Request) {
 	data, err := res.GetData()
 	if err != nil {
 		http.Error(w, "Failed to get resource data.", 500)
@@ -68,8 +58,8 @@ func (res *GenericResource) Dehydrate(w http.ResponseWriter, r *http.Request) {
 	w.Write(json_string)
 }
 
-// Hydrate handles only POST (for now) requests and does nothing useful (for now).
-func (res *GenericResource) Hydrate(w http.ResponseWriter, r *http.Request) {
+// HandlePOST handles only POST (for now) requests and does nothing useful (for now).
+func (res *SimpleResource) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	test_response := make(map[string]interface{})
 	test_response["ping"] = "pong"
 	json_string, err := json.Marshal(test_response)
@@ -82,11 +72,11 @@ func (res *GenericResource) Hydrate(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetBaseUrl returns resource's BaseUrl attribute.
-func (res *GenericResource) GetBaseUrl() (string, error) {
+func (res *SimpleResource) GetBaseUrl() (string, error) {
 	return res.BaseUrl, nil
 }
 
 // GetBaseUrl returns resource's Data attribute.
-func (res *GenericResource) GetData() (interface{}, error) {
+func (res *SimpleResource) GetData() (interface{}, error) {
 	return res.Data, nil
 }

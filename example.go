@@ -12,7 +12,7 @@ type Cat struct {
 	Alive bool
 }
 
-func main() {
+func SimpleResourceExample() {
 	cats := []Cat{
 		{"Batman", 13, true},
 		{"Banana", 3, true},
@@ -20,11 +20,15 @@ func main() {
 	}
 	cat := Cat{"Batman", 13, true}
 
-	cat_resource := resources.GenericResource{cat, "/cat"}
-	cats_resource := resources.GenericResource{cats, "/cats"}
+	cat_resource := resources.SimpleResource{cat, "/cat"}
+	cats_resource := resources.SimpleResource{cats, "/cats"}
 
 	api.Register(&cat_resource)
 	api.Register(&cats_resource)
+}
+
+func main() {
+	SimpleResourceExample()
 
 	http.ListenAndServe(":8000", nil)
 }

@@ -11,9 +11,9 @@ type TestCat struct {
 	Name string
 }
 
-func TestGenericResourceDehydrate(t *testing.T) {
+func TestSimpleResourceHandleGET(t *testing.T) {
 	testUrl := "/cat"
-	resource := resources.GenericResource{
+	resource := resources.SimpleResource{
 		TestCat{"Meow"},
 		testUrl,
 	}
@@ -27,7 +27,7 @@ func TestGenericResourceDehydrate(t *testing.T) {
 		t.Errorf("Failed to create request.")
 	}
 
-	resource.Dehydrate(recorder, req)
+	resource.HandleGET(recorder, req)
 
 	if body := recorder.Body.String(); body != expectedBody {
 		t.Errorf("Body (%s) did not match expectation (%s).",
@@ -36,9 +36,9 @@ func TestGenericResourceDehydrate(t *testing.T) {
 	}
 }
 
-func TestGenericResourceHydrate(t *testing.T) {
+func TestSimpleResourceHandlePOST(t *testing.T) {
 	testUrl := "/cat"
-	resource := resources.GenericResource{
+	resource := resources.SimpleResource{
 		TestCat{"Meow"},
 		testUrl,
 	}
@@ -51,7 +51,7 @@ func TestGenericResourceHydrate(t *testing.T) {
 		t.Errorf("Failed to create request.")
 	}
 
-	resource.Hydrate(recorder, req)
+	resource.HandlePOST(recorder, req)
 
 	if body := recorder.Body.String(); body != expectedBody {
 		t.Errorf("Body (%s) did not match expectation (%s).",
@@ -60,10 +60,10 @@ func TestGenericResourceHydrate(t *testing.T) {
 	}
 }
 
-func TestGenericResourceGetters(t *testing.T) {
+func TestSimpleResourceGetters(t *testing.T) {
 	testUrl := "/cat2"
 	cat := TestCat{"Meow"}
-	resource := resources.GenericResource{cat, testUrl}
+	resource := resources.SimpleResource{cat, testUrl}
 
 	if data, _ := resource.GetData(); data != cat {
 		t.Errorf("GetData didn't return expected data")
