@@ -44,12 +44,7 @@ func (res *SimpleResource) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // HandleGET handles GET requests.
 // Method's name is not obvious but I like it :)
 func (res *SimpleResource) HandleGET(w http.ResponseWriter, r *http.Request) {
-	data, err := res.GetData()
-	if err != nil {
-		http.Error(w, "Failed to get resource data.", 500)
-		return
-	}
-	json_string, err := json.Marshal(data)
+	json_string, err := json.Marshal(res.Data)
 	if err != nil {
 		http.Error(w, "Failed to marshal resource data.", 500)
 		return
@@ -74,9 +69,4 @@ func (res *SimpleResource) HandlePOST(w http.ResponseWriter, r *http.Request) {
 // GetBaseUrl returns resource's BaseUrl attribute.
 func (res *SimpleResource) GetBaseUrl() (string, error) {
 	return res.BaseUrl, nil
-}
-
-// GetBaseUrl returns resource's Data attribute.
-func (res *SimpleResource) GetData() (interface{}, error) {
-	return res.Data, nil
 }

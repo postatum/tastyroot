@@ -65,9 +65,6 @@ func TestSimpleResourceGetters(t *testing.T) {
 	cat := TestCat{"Meow"}
 	resource := resources.SimpleResource{cat, testUrl}
 
-	if data, _ := resource.GetData(); data != cat {
-		t.Errorf("GetData didn't return expected data")
-	}
 	if url, _ := resource.GetBaseUrl(); url != testUrl {
 		t.Errorf("GetBaseUrl didn't return expected url")
 	}

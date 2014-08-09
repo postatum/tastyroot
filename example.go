@@ -20,15 +20,22 @@ func SimpleResourceExample() {
 	}
 	cat := Cat{"Batman", 13, true}
 
-	cat_resource := resources.SimpleResource{cat, "/cat"}
-	cats_resource := resources.SimpleResource{cats, "/cats"}
+	cat_resource := &resources.SimpleResource{cat, "/cat"}
+	cats_resource := &resources.SimpleResource{cats, "/cats"}
 
-	api.Register(&cat_resource)
-	api.Register(&cats_resource)
+	api.Register(cat_resource)
+	api.Register(cats_resource)
+}
+
+func MongoResourceExample() {
+
+
 }
 
 func main() {
 	SimpleResourceExample()
+
+	MongoResourceExample()
 
 	http.ListenAndServe(":8000", nil)
 }
