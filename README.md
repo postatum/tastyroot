@@ -1,7 +1,7 @@
 tastyroot
 =========
 
-Webservice API framework for Go inspired by Django Tastypie a bit.
+Webservice API framework for Go.
 
 It's mostly built for fun and practice, thus:
 
