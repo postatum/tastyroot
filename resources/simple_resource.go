@@ -70,3 +70,7 @@ func (res *SimpleResource) HandlePOST(w http.ResponseWriter, r *http.Request) {
 func (res *SimpleResource) GetBaseUrl() (string, error) {
 	return res.BaseUrl, nil
 }
+
+func (res *SimpleResource) GetRequestedId(r *http.Request) (string, error) {
+	return "", nil
+}

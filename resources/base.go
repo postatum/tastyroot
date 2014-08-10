@@ -3,6 +3,7 @@ package resources
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 // ResourceInterface defines an interface implementers of which
@@ -12,12 +13,13 @@ type ResourceInterface interface {
 	HandleGET(w http.ResponseWriter, r *http.Request)
 	HandlePOST(w http.ResponseWriter, r *http.Request)
 	GetBaseUrl() (string, error)
+	GetRequestedId(r *http.Request) (string, error)
 }
 
 // EngineInterface defines an interface that should be implemented
 // for every database engine you want to use with EngineResource.
 type EngineInterface interface {
-	HandleGETData(r *http.Request) (interface{}, error)
+	HandleGETData(r *http.Request, requestedId string) (interface{}, error)
 	HandlePOSTData(r *http.Request) error
 }
 
@@ -33,10 +35,7 @@ type EngineInterface interface {
 // 	 Constructor function will simplify this process.
 type EngineResource struct {
 	BaseUrl string
-	Engine EngineInterface
-	ConnectionAddress string
-	DatabaseName string
-	TableName string
+	Engine  EngineInterface
 }
 
 func (res *EngineResource) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -49,12 +48,16 @@ func (res *EngineResource) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (res *EngineResource) HandleGET(w http.ResponseWriter, r *http.Request) {
-	data, err := res.Engine.HandleGETData(r)
+	requestedId, _ := res.GetRequestedId(r)
+	data, err := res.Engine.HandleGETData(r, requestedId)
+	if err != nil {
+		data = map[string]string{"error": err.Error()}
+	}
 
 	json_string, err := json.Marshal(data)
 	if err != nil {
-		http.Error(w, "Failed to marshal resource data.", 500)
-		return
+		data = map[string]string{"error": err.Error()}
+		json_string, _ = json.Marshal(data)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -67,14 +70,12 @@ func (res *EngineResource) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	// TODO: Should I parse some data before?
 
 	if err := res.Engine.HandlePOSTData(r); err != nil {
-		json_data["success"] = false
-	} else {
-		json_data["success"] = true
+		json_data["error"] = err.Error()
 	}
 	json_string, err := json.Marshal(json_data)
 	if err != nil {
-		http.Error(w, "Failed to marshal response.", 500)
-		return
+		json_data["error"] = err.Error()
+		json_string, _ = json.Marshal(json_data)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(json_string)
@@ -82,4 +83,14 @@ func (res *EngineResource) HandlePOST(w http.ResponseWriter, r *http.Request) {
 
 func (res *EngineResource) GetBaseUrl() (string, error) {
 	return res.BaseUrl, nil
+}
+
+func (res *EngineResource) GetRequestedId(r *http.Request) (string, error) {
+	baseUrl, _ := res.GetBaseUrl()
+	clearUrl := strings.Replace(r.URL.Path, baseUrl, "", 1)
+	if len(clearUrl) == 0 {
+		return "", nil
+	}
+	splitted := strings.Split(clearUrl, "/")
+	return splitted[0], nil
 }

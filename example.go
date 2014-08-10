@@ -28,12 +28,18 @@ func SimpleResourceExample() {
 }
 
 func MongoResourceExample() {
-
-
+	cats_resource := resources.MongoResource(
+		"/cats/",
+		"127.0.0.1:27017",
+		"godb",
+		"cats",
+		10,
+	)
+	api.Register(cats_resource)
 }
 
 func main() {
-	SimpleResourceExample()
+	// SimpleResourceExample()
 
 	MongoResourceExample()
 
