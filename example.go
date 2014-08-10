@@ -28,6 +28,9 @@ func SimpleResourceExample() {
 }
 
 func MongoResourceExample() {
+	// Test:
+	// curl -H "Content-Type: application/json" -d '{"id": 1,"ping":"pong"}' http://localhost:8000/cats/
+
 	cats_resource := resources.MongoResource(
 		"/cats/",
 		"127.0.0.1:27017",
