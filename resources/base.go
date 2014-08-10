@@ -9,18 +9,18 @@ import (
 // ResourceInterface defines an interface implementers of which
 // should handle GET, POST requests from user.
 type ResourceInterface interface {
-	ServeHTTP(w http.ResponseWriter, r *http.Request)
-	HandleGET(w http.ResponseWriter, r *http.Request)
-	HandlePOST(w http.ResponseWriter, r *http.Request)
+	ServeHTTP(http.ResponseWriter, *http.Request)
+	HandleGET(http.ResponseWriter, *http.Request)
+	HandlePOST(http.ResponseWriter, *http.Request)
 	GetBaseUrl() (string, error)
-	GetRequestedId(r *http.Request) (string, error)
+	GetRequestedId(*http.Request) (string, error)
 }
 
 // EngineInterface defines an interface that should be implemented
 // for every database engine you want to use with EngineResource.
 type EngineInterface interface {
-	HandleGETData(requestedId string) (interface{}, error)
-	HandlePOSTData(requestData map[string]interface{}) error
+	HandleGETData(string) (interface{}, error)
+	HandlePOSTData(map[string]interface{}) error
 }
 
 // EngineResource implements ResourceInterface and is intended to use
